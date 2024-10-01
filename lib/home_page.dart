@@ -76,25 +76,19 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    ElevatedButton(
+                    ElevatedButton.icon(
                       onPressed: () {
                         Future.delayed(Duration(seconds: 20)).then((s) {
                           NotificationService().showNotification(
                             id: 1,
                             body: "Welcome",
                             payload: "now",
-                            title: "New Notificatio",
+                            title: "New Notification",
                           );
                         });
                       },
-                      child: Checkbox(
-                          value: value,
-                          activeColor: Colors.amber,
-                          onChanged: (value) {
-                            setState(() {
-                              this.value = value!;
-                            });
-                          }),
+                      label: Text(""),
+                      icon: Icon(Icons.check_box),
                     ),
                     ElevatedButton(
                       onPressed: () async {
@@ -116,29 +110,22 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(
                   height: 10,
                 ),
-                Row(
+                    Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    ElevatedButton(
-                      onPressed: () async {
-                        final TimeOfDay? timeOfDay = await showTimePicker(
-                            context: context,
-                            initialTime: selectedTime,
-                            initialEntryMode: TimePickerEntryMode.dial);
-                        if (timeOfDay != null) {
-                          setState(() {
-                            selectedTime = timeOfDay;
-                          });
-                        }
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Future.delayed(Duration(seconds: 20)).then((s) {
+                          NotificationService().showNotification(
+                            id: 2,
+                            body: "Welcome2",
+                            payload: "now",
+                            title: "New Notification",
+                          );
+                        });
                       },
-                      child: Checkbox(
-                          value: value,
-                          activeColor: Colors.amber,
-                          onChanged: (value) {
-                            setState(() {
-                              this.value = value!;
-                            });
-                          }),
+                      label: Text(""),
+                      icon: Icon(Icons.check_box),
                     ),
                     ElevatedButton(
                       onPressed: () async {
@@ -157,6 +144,7 @@ class _HomePageState extends State<HomePage> {
                     )
                   ],
                 ),
+                
               ],
             ),
           ),
