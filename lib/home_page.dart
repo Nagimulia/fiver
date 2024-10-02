@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:vitaliy/services/NotificationService.dart';
 
@@ -12,6 +14,8 @@ class _HomePageState extends State<HomePage> {
   String selectedGender = 'None selected';
   TimeOfDay selectedTime = TimeOfDay.now();
   bool value = false;
+  bool? isChecked3 = false;
+  bool? isChecked2 = false;
 
   @override
   Widget build(BuildContext context) {
@@ -75,20 +79,20 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    ElevatedButton.icon(
+                  children: [
+                    ElevatedButton(
+                      child: Checkbox(
+                          value: isChecked3,
+                          onChanged: (val) {
+                            setState(() {
+                              isChecked3 = val;
+                            });
+                          }),
                       onPressed: () {
-                        Future.delayed(Duration(seconds: 20)).then((s) {
-                          NotificationService().showNotification(
-                            id: 1,
-                            body: "Welcome",
-                            payload: "now",
-                            title: "New Notification",
-                          );
-                        });
+                        NotificationService.showInstantNotification(
+                            "Instant Notification",
+                            "This shows an instant notifications");
                       },
-                      label: Text(""),
-                      icon: Icon(Icons.check_box),
                     ),
                     ElevatedButton(
                       onPressed: () async {
@@ -104,28 +108,30 @@ class _HomePageState extends State<HomePage> {
                       },
                       child:
                           Text('${selectedTime.hour}: ${selectedTime.minute}'),
-                    )
+                    ),
+                    const SizedBox(height: 12),
                   ],
                 ),
                 const SizedBox(
                   height: 10,
                 ),
-                    Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    ElevatedButton.icon(
+                  children: [
+                    ElevatedButton(
+                      child: Checkbox(
+                          value: isChecked2,
+                          onChanged: (val) {
+                            setState(() {
+                              isChecked2 = val;
+                            });
+                          }),
                       onPressed: () {
-                        Future.delayed(Duration(seconds: 20)).then((s) {
-                          NotificationService().showNotification(
-                            id: 2,
-                            body: "Welcome2",
-                            payload: "now",
-                            title: "New Notification",
-                          );
-                        });
+                        NotificationService.showInstantNotification(
+                            "Instant Notification",
+                            "This shows an instant notifications");
                       },
-                      label: Text(""),
-                      icon: Icon(Icons.check_box),
+                      // child: const Text('Show Notification'),
                     ),
                     ElevatedButton(
                       onPressed: () async {
@@ -137,6 +143,8 @@ class _HomePageState extends State<HomePage> {
                           setState(() {
                             selectedTime = timeOfDay;
                           });
+
+                       
                         }
                       },
                       child:
@@ -144,7 +152,6 @@ class _HomePageState extends State<HomePage> {
                     )
                   ],
                 ),
-                
               ],
             ),
           ),

@@ -1,69 +1,69 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-// Top-level function for handling background notifications
-void backgroundNotificationResponseHandler(
-    NotificationResponse notification) async {
-  print('Received background notification response: $notification');
-}
+import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
-  final FlutterLocalNotificationsPlugin notificationPlugin =
-      FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  Future<void> initNotification() async {
-    const AndroidInitializationSettings initializationAndroidSettings =
-        AndroidInitializationSettings('logo');
+  static Future<void> onDidReceiveNotification(NotificationResponse notificationResponse) async {
+    print("Notification receive");
+  }
 
-    final DarwinInitializationSettings initializationSettingIOS =
-        DarwinInitializationSettings(
-      requestAlertPermission: true,
-      defaultPresentSound: true,
-      defaultPresentAlert: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-      onDidReceiveLocalNotification: (id, title, body, payload) async {
-        print('Received local notification: $id, $title, $body, $payload');
-      },
+  static Future<void> init() async {
+    const AndroidInitializationSettings androidInitializationSettings =
+        AndroidInitializationSettings("@mipmap/ic_launcher");
+    const DarwinInitializationSettings iOSInitializationSettings = DarwinInitializationSettings();
+
+    const InitializationSettings initializationSettings = InitializationSettings(
+      android: androidInitializationSettings,
+      iOS: iOSInitializationSettings,
     );
-
-    final InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: initializationAndroidSettings,
-      iOS: initializationSettingIOS,
-    );
-
-    await notificationPlugin.initialize(
+    await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveBackgroundNotificationResponse:
-          backgroundNotificationResponseHandler,
+      onDidReceiveNotificationResponse: onDidReceiveNotification,
+      onDidReceiveBackgroundNotificationResponse: onDidReceiveNotification,
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+  }
+
+ static Future<void> showInstantNotification(String title, String body) async {
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: AndroidNotificationDetails(
+          'instant_notification_channel_id',
+          'Instant Notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails());
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: 'instant_notification',
     );
   }
 
-  Future<void> showNotification({
-    int id = 0,
-    String? title,
-    String? body,
-    String? payload,
-  }) async {
-    print('Showing notification: $id, $title, $body, $payload');
-    await notificationPlugin.show(
+  static Future<void> scheduleNotification(int id, String title, String body, DateTime scheduledTime) async {
+    await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      await notificationDetails(),
-      payload: payload,
-    );
-  }
-
-  Future<NotificationDetails> notificationDetails() async {
-    return const NotificationDetails(
-      iOS: DarwinNotificationDetails(),
-      android: AndroidNotificationDetails(
-        'channelId',
-        'channelName',
-        importance: Importance.max,
-        priority: Priority.high,
+      tz.TZDateTime.from(scheduledTime, tz.local),
+      const NotificationDetails(
+        iOS: DarwinNotificationDetails(),
+        android: AndroidNotificationDetails(
+          'reminder_channel',
+          'Reminder Channel',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
       ),
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.dateAndTime,
     );
   }
 }
